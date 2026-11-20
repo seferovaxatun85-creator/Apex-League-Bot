@@ -1,1 +1,24 @@
+import discord
+from discord.ext import commands
+
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+
+@bot.command()
+@commands.has_permissions(ban_members=True)
+async def ban(ctx, member: discord.Member, *, reason="Sebep belirtilmedi"):
+    await member.ban(reason=reason)
+    await ctx.send(f"{member.mention} sunucudan yasaklandı. Sebep: {reason}")
+
+
+@ban.error
+async def ban_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("Bu komutu kullanmak için yetkin yok.")
+    elif isinstance(error, commands.MemberNotFound):
+        await ctx.send("Kullanıcı bulunamadı.")
 
